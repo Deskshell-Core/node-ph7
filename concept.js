@@ -1,6 +1,6 @@
 var ph7 = require("ph7");
 
-var pVM = ph7.createVM({
+var pVM = ph7.create({
 	// global config
 	outputBuffer: false,
 	errorBuffer: false,
@@ -30,10 +30,12 @@ pVM.$_SERVER["..."]			= "foobar";
 pVM.$_ENV["..."]			= "foobar";
 pVM.$argv[] 				= "beep";
 
-// run
-var exitcode1 = pVM.runScript("<?php echo 'OvO'; ?>");
-var exitcode2 = pVM.runFile(__dirname+"/script.php");
+pVM.compileFile("./script.php");
+// or: pVM.compile("<?php echo 'ovo'; ?>");
+
+// Run it as a function to execute it - how nice! :)
+var exitCode = pVM();
 
 pVM.config({ outputBuffer: true });
-var exitcode3 = pVM.runScript("<?php echo 'OvO'; ?>");
-var output = pVM.output, error = pVM.error;
+var exitCode2 = pVM(),
+    output = pVM.output;

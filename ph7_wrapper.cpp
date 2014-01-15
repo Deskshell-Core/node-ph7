@@ -13,56 +13,50 @@ using namespace v8;
 
 // Deh structorz.
 ph7_wrapper::ph7_wrapper() {
-	// Save the REAL object we want.
+	ph7_init(&this->engine);
 }
 ph7_wrapper::~ph7_wrapper() {
+	ph7_vm_release(this->pVM);
+	ph7_release(this->engine);
 }
 // Module structorz.
-Handle<Value> ph7_wrapper::New(const Arguments& args) {
+void ph7_wrapper::init(Handle<Object> exports) {
+	// Prepare constructor template  	
+  	NODE_SET_METHOD(exports, "create", ph7_wrapper::create);
+}
+
+// The actual ph7 interaction method. This spills out a Ph7VM object.
+Handle<Value> ph7_wrapper::create(const Arguments& args) {
 	HandleScope scope;
-	
+
+	// Impersonate a new...
 	ph7_wrapper *to = new ph7_wrapper;
 	to->Wrap(args.This());
 	
-	return args.This();
-}
-void ph7_wrapper::init(Handle<Object> exports) {
-	// Prepare constructor template
-  	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-  	tpl->SetClassName(String::NewSymbol("__construct"));
-  	tpl->InstanceTemplate()->SetInternalFieldCount(1);
-
-  	// Prototype
-    NODE_SET_PROTOTYPE_METHOD(tpl, "runString", ph7_wrapper::runString);
-    NODE_SET_PROTOTYPE_METHOD(tpl, "runScript", ph7_wrapper::runScript);
-
-  	Persistent<Function> constructor = Persistent<Function>::New(tpl->GetFunction());
-  	NJS_METHOD(exports, "ph7", constructor);
-}
-
-// The actual ph7 interaction methods.
-Handle<Value> ph7_wrapper::runString(const Arguments& args) {
-	HandleScope scope;
+	// Create template
+	Local<ObjectTemplate> tpl = ObjectTemplate::New();
+	tpl->SetInternalFieldCount(1);
 	
-	// Typical ph7 procedure: alloc, config, exec, output, prepair, release & return.
-	ph7 *engine; ph7_init(engine);
-	ph7_vm *pVM; ph7_vm_config( pVM, PH7_VM_CONFIG_OUTPUT, ph7_wrapper::print );
-		
-	
-	ph7_config(engine, PH7_CONFIG_ERR_OUTPUT, ph7_wrapper::print_error, NULL);
-	ph7_compile_v2(
-		engine,
-		// args[0] as a string
-		ph7_wrapper::print,
-		-1, // Let the engine read untill the end of the string.
-		pVM
-	);
-	
-	return scope.Close(Boolean::New(true));	
-}
-Handle<Value> ph7_wrapper::runScript(const Arguments& args) {
-	HandleScope scope;
-	return scope.Close(Boolean::New(true));	
-}
+	// Now, lets assign methods!
+	NODE_SET_METHOD(tpl, "addSuper", 	ph7_wrapper::vm_addSuper);
+	NODE_SET_METHOD(tpl, "addVar", 		ph7_wrapper::vm_addVar);
+	NODE_SET_METHOD(tpl, "config", 		ph7_wrapper::vm_config);
+	NODE_SET_METHOD(tpl, "compile", 		ph7_wrapper::vm_compile);
+	NODE_SET_METHOD(tpl, "compileFile", 	ph7_wrapper::vm_compileFile);
 
+	// Let's not forget the accessors.
+	tpl->SetAccessor(String::New("$_SERVER"), 	ph7_wrapper::vm_getter, ph7_wrapper::vm_setter);
+	tpl->SetAccessor(String::New("$_ENV"), 		ph7_wrapper::vm_getter, ph7_wrapper::vm_setter);
+	tpl->SetAccessor(String::New("$_GET"), 		ph7_wrapper::vm_getter, ph7_wrapper::vm_setter);
+	tpl->SetAccessor(String::New("$_POST"), 	ph7_wrapper::vm_getter, ph7_wrapper::vm_setter);
+	tpl->SetAccessor(String::New("$_COOKIE"), 	ph7_wrapper::vm_getter, ph7_wrapper::vm_setter);
+	tpl->SetAccessor(String::New("$_SESSION"), 	ph7_wrapper::vm_getter, ph7_wrapper::vm_setter);
+	tpl->SetAccessor(String::New("$_HEADER"), 	ph7_wrapper::vm_getter, ph7_wrapper::vm_setter);
+	tpl->SetAccessor(String::New("$argv"), 		ph7_wrapper::vm_getter, ph7_wrapper::vm_setter);
+	
+	// Now the uber convinience :3
+	tpl->SetCallAsFunctionHandler(ph7_wrapper::vm_run);
 
+	to->Wrap(args.This());	
+	return scope.Close(tpl->NewInstance());
+}
