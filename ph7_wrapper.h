@@ -42,7 +42,7 @@ class ph7_wrapper : public node::ObjectWrap {
 		bool errorBuffering;
 		bool useTags;
 		bool reportAll;
-		v8::Local<v8::Value> include_path;
+		v8::Local<v8::Array> include_path;
 		// Script config
 		v8::Local<v8::Array> $_SERVER;
 		v8::Local<v8::Array> $_ENV;
