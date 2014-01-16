@@ -42,18 +42,18 @@ class ph7_wrapper : public node::ObjectWrap {
 		bool errorBuffering;
 		bool useTags;
 		bool reportAll;
-		v8::Persistent<v8::Array> includePath;
+		v8::Local<v8::Value> include_path;
 		// Script config
-		v8::Persistent<v8::Array> $_SERVER;
-		v8::Persistent<v8::Array> $_ENV;
-		v8::Persistent<v8::Array> $_HEADERS;
-		v8::Persistent<v8::Array> $_GET;
-		v8::Persistent<v8::Array> $_POST;
-		v8::Persistent<v8::Array> $_COOKIE;
-		v8::Persistent<v8::Array> $_SESSION;
-		v8::Persistent<v8::Array> $argv;
-		v8::Persistent<v8::Array> $_GLOBALS;
-		v8::Persistent<v8::Array> $_SUPER_GLOBALS;
+		v8::Local<v8::Array> $_SERVER;
+		v8::Local<v8::Array> $_ENV;
+		v8::Local<v8::Array> $_HEADERS;
+		v8::Local<v8::Array> $_GET;
+		v8::Local<v8::Array> $_POST;
+		v8::Local<v8::Array> $_COOKIE;
+		v8::Local<v8::Array> $_SESSION;
+		v8::Local<v8::Array> $argv;
+		v8::Local<v8::Array> $_GLOBALS;
+		v8::Local<v8::Array> $_SUPER_GLOBALS;
 };
 
 #endif
