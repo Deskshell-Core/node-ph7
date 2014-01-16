@@ -8,7 +8,7 @@ extern "C" {
 
 #define NJS_METHOD(obj, name, target) obj->Set(String::NewSymbol(name), target)
 #define NJS_UNWRAP(var, cname, args) cname * var = node::ObjectWrap::Unwrap<cname>(args.This())
-#define NJS_UNWRAP2(var, cname, args) cname * var = node::ObjectWrap::Unwrap<cname>(args.Holder())
+#define NJS_UNWRAP_ACC(var, cname, args, c) cname * var = (cname *) args.This()->GetPointerFromInternalField( c )
 
 using namespace std;
 using namespace v8;
@@ -53,15 +53,11 @@ void ph7_wrapper::init(Handle<Object> exports) {
 // The actual ph7 interaction method. This spills out a Ph7VM object.
 Handle<Value> ph7_wrapper::create(const Arguments& args) {
 	HandleScope scope;
-
-	// Impersonate a new...
-	ph7_wrapper *$self = new ph7_wrapper;
-	$self->Wrap(args.This());
 	
 	// Create template
 	Local<ObjectTemplate> tpl = ObjectTemplate::New();
-	tpl->SetInternalFieldCount(14);
-	
+	tpl->SetInternalFieldCount(1);
+		
 	// Now, lets assign methods!
 	NODE_SET_METHOD(tpl, "addSuper", 	ph7_wrapper::vm_addSuper);
 	NODE_SET_METHOD(tpl, "addVar", 		ph7_wrapper::vm_addVar);
@@ -83,8 +79,13 @@ Handle<Value> ph7_wrapper::create(const Arguments& args) {
 	// Now the uber convinience :3
 	tpl->SetCallAsFunctionHandler(ph7_wrapper::vm_run);
 
-	$self->Wrap(args.This());	
-	return scope.Close(tpl->NewInstance());
+	// Wrap the nativeness.
+	Local<Object> obj = tpl->NewInstance();
+	ph7_wrapper *$self = new ph7_wrapper;
+	// Cast to void, store in object.
+	obj->SetPointerInInternalField(0, (void*)$self);
+
+	return scope.Close(obj);
 }
 
 
@@ -131,13 +132,11 @@ Handle<Value> ph7_wrapper::vm_run(const Arguments& args) {}
 
 // The getter and setters
 Handle<Value> ph7_wrapper::vm_getter(Local<String> property, const AccessorInfo& info) {
-	//NJS_UNWRAP2($self, ph7_wrapper, info);
-	ph7_wrapper* $self = node::ObjectWrap::Unwrap<ph7_wrapper>(info.Holder());
+	NJS_UNWRAP_ACC($self, ph7_wrapper, info, 0);	
 	HandleScope scope;
 	Local<Value> undef;
 
 	const char* cprop = **(new String::AsciiValue(property));
-	cout << "--> " << cprop << endl;
 
 	     if (strcmp(cprop, "include_path") == 0) { return scope.Close($self->include_path); }
 	else if (strcmp(cprop, "$_SERVER") == 0) { return scope.Close($self->$_SERVER); }
