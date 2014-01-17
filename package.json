@@ -2,7 +2,7 @@
   "name": "ph7",
   "version": "0.1.0",
   "description": "In-Process PHP execution for NodeJS",
-  "main": "build/Release/ph7",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "install": "node-gyp rebuild"
