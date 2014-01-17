@@ -19,9 +19,8 @@ class ph7_wrapper : public node::ObjectWrap {
 		static v8::Handle<v8::Value> create(const v8::Arguments& args);
 
 		// VM methods	
-		static v8::Handle<v8::Value> vm_addSuper(const v8::Arguments& args);
-		static v8::Handle<v8::Value> vm_addVar(const v8::Arguments& args);
 		static v8::Handle<v8::Value> vm_config(const v8::Arguments& args);
+		static v8::Handle<v8::Value> vm_prepair(const v8::Arguments& args);
 		static v8::Handle<v8::Value> vm_compile(const v8::Arguments& args);
 		static v8::Handle<v8::Value> vm_compileFile(const v8::Arguments& args);
 		// Convinience method
@@ -31,7 +30,9 @@ class ph7_wrapper : public node::ObjectWrap {
 		static void vm_setter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info);
 
 		// Helper: printing stuff...straightforward.
-		static void print(const void *msg, unsigned int len, void *userData);
+		static int print(const void *msg, unsigned int len, void *userData);
+		
+		void blabla();
 		
 	private:
 		// These things may only be seen from within the methods above.
@@ -43,17 +44,17 @@ class ph7_wrapper : public node::ObjectWrap {
 		bool useTags;
 		bool reportAll;
 		// Script config
-		v8::Local<v8::Array> include_path;
-		v8::Local<v8::Array> $_SERVER;
-		v8::Local<v8::Array> $_ENV;
-		v8::Local<v8::Array> $_HEADERS;
-		v8::Local<v8::Array> $_GET;
-		v8::Local<v8::Array> $_POST;
-		v8::Local<v8::Array> $_COOKIE;
-		v8::Local<v8::Array> $_SESSION;
-		v8::Local<v8::Array> $argv;
-		v8::Local<v8::Array> $_GLOBALS;
-		v8::Local<v8::Array> $_SUPER_GLOBALS;
+		v8::Persistent<v8::Array> include_path;
+		v8::Persistent<v8::Array> $argv;
+		v8::Persistent<v8::Array> $SGLOBALS;
+		v8::Persistent<v8::Array> $GLOBALS;
+		v8::Persistent<v8::Array> $_SERVER;
+		v8::Persistent<v8::Array> $_ENV;
+		v8::Persistent<v8::Array> $_HEADER;
+		v8::Persistent<v8::Array> $_GET;
+		v8::Persistent<v8::Array> $_POST;
+		v8::Persistent<v8::Array> $_COOKIE;
+		v8::Persistent<v8::Array> $_SESSION;
 };
 
 #endif

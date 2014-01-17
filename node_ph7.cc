@@ -8,4 +8,9 @@ void InitAll(Handle<Object> exports) {
   	ph7_wrapper::init(exports);
 }
 
+// Bit of logic to make this easier.
+#ifdef GO_NATIVE
+NODE_MODULE(node_ph7, InitAll)
+#else
 NODE_MODULE(ph7, InitAll)
+#endif

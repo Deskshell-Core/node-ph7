@@ -1,0 +1,27 @@
+{
+  "name": "ph7",
+  "version": "0.1.0",
+  "description": "In-Process PHP execution for NodeJS",
+  "main": "build/Release/ph7",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Deskshell-Core/node-ph7.git"
+  },
+  "keywords": [
+    "php",
+    "ph7",
+    "in-process",
+    "engine"
+  ],
+  "author": "Ingwie Phoenix",
+  "license": "MIT",
+  "gypfile": true,
+  "bugs": {
+    "url": "https://github.com/Deskshell-Core/node-ph7/issues"
+  },
+  "homepage": "https://github.com/Deskshell-Core/node-ph7"
+}
