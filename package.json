@@ -2,7 +2,6 @@
   "name": "ph7",
   "version": "0.1.1",
   "description": "In-Process PHP execution for NodeJS",
-  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/Deskshell-Core/node-ph7.git"
