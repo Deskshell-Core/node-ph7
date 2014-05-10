@@ -14,11 +14,7 @@
     "url": "https://github.com/Deskshell-Core/node-ph7/issues"
   },
   "homepage": "https://github.com/Deskshell-Core/node-ph7",
-  "dependencies": {
-  	"npm": "*",
-  	"npmlog": "*"
-  },
   "scripts": {
-  	"postinstall": "node configure.js"
+  	"preinstall": "node-gyp rebuild"
   }
 }
