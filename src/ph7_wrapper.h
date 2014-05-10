@@ -1,3 +1,12 @@
+#if defined(_WIN32) || defined(_WIN64)
+  #define STDIN_FILENO 0
+  #define STDOUT_FILENO 1
+  #define STDERR_FILENO 2
+
+  // Visual Studio's equivalent of unistd.h
+  #include <io.h> 
+#endif
+
 #ifndef HAVE_PH7W_H
 #define HAVE_PH7W_H
 
