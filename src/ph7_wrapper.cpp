@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string.h>
 #include <node.h>
 #include "ph7_wrapper.h"
 extern "C" {
